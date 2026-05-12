@@ -1,73 +1,111 @@
-# React + TypeScript + Vite
+# ArtSpot - Inventory Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ArtSpot is a full-stack Inventory Management application designed to track and manage inventory items across multiple shops and suppliers. The system features a centralized dashboard to monitor stock levels, view low-stock notifications, and manage shops and suppliers.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**Frontend**
+- **Framework:** React 19 + TypeScript + Vite
+- **Data Fetching:** Apollo Client (GraphQL)
+- **Styling:** Vanilla CSS
+- **Linting:** ESLint with TypeScript and React plugins
 
-## React Compiler
+**Backend**
+- **Framework:** Python + Django
+- **API:** Graphene-Django (GraphQL)
+- **Database:** SQLite (for development)
+- **Features:** Django Signals for automated low-stock alerts, Django Admin for management
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Key Features
 
-## Expanding the ESLint configuration
+- **Dashboard:** Unified view for navigating between Inventory, Shops, and Suppliers.
+- **Stock Tracking:** Track item quantities with comprehensive movement history (stock in, stock out, adjustments).
+- **Low Stock Alerts:** Automatic notifications and visual indicators when items fall below their designated thresholds.
+- **GraphQL API:** Flexible and efficient querying of relations (e.g., retrieving an item along with its shop and supplier details).
+- **Extensible Models:** Robust backend architecture with separate apps for `core`, `inventory`, `shops`, and `suppliers`.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Getting Started
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Prerequisites
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Node.js (v18+ recommended)
+- Python (3.10+ recommended)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Backend Setup
+
+1. Open your terminal and navigate to the `backend` directory:
+   ```bash
+   cd backend
+   ```
+2. Create and activate a virtual environment:
+   ```bash
+   # Windows
+   python -m venv venv
+   venv\Scripts\activate
+   
+   # macOS/Linux
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+3. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Run database migrations:
+   ```bash
+   python manage.py migrate
+   ```
+5. (Optional) Seed the database with sample data:
+   ```bash
+   python manage.py seed
+   ```
+6. Start the Django development server:
+   ```bash
+   python manage.py runserver
+   ```
+   *The GraphQL Playground (GraphiQL) will be available at `http://127.0.0.1:8000/graphql/`*
+
+### Frontend Setup
+
+1. Open a new terminal instance and navigate to the `frontend` directory:
+   ```bash
+   cd frontend
+   ```
+2. Install the Node dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+   *The application will open in your default browser, typically at `http://localhost:5173/`*
+
+## Project Structure
+
+```text
+ArtSpot/
+├── backend/
+│   ├── core/           # Main Django settings, URLs, and GraphQL schema
+│   ├── inventory/      # InventoryItem, StockMovement models and GraphQL types
+│   ├── shops/          # Shop models, queries, and mutations
+│   ├── suppliers/      # Supplier models, queries, and mutations
+│   └── manage.py       # Django CLI
+└── frontend/
+    ├── src/
+    │   ├── assets/     # Static assets like images and icons
+    │   ├── components/ # React components (e.g., Dashboard.tsx)
+    │   ├── lib/        # Library configurations (e.g., apollo-client.ts)
+    │   ├── App.tsx     # Main application layout and top bar
+    │   └── main.tsx    # React mounting point
+    ├── package.json    # Frontend dependencies and scripts
+    └── vite.config.ts  # Vite bundler configuration
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## GraphQL Operations
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+The backend exposes a comprehensive GraphQL API. You can explore available queries and mutations via the GraphiQL interface at `/graphql/`. Common operations include:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Querying `all_items`, `low_stock_items`, and `items_by_shop`
+- Mutations to `createShop`, `createSupplier`, and `createInventoryItem`
+- `adjustStock` mutation to update stock levels and trigger automated alerts
